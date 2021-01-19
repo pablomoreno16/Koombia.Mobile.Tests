@@ -1,37 +1,46 @@
-﻿using NUnit.Framework;
+﻿using TechTalk.SpecFlow;
 using TestAutomationFramework.Common;
 using TestAutomationFramework.Containers;
 
 namespace UnitConverter.Mobile.Tests.Initializer
 {
-    [SetUpFixture]
+    [Binding]
     public class TestInitializer
     {
-        [OneTimeSetUp]
-        public static void Start()
+        [BeforeTestRun]
+        public static void BeforeTestRun()
         {
             AppContainer.SetUpDriver();
         }
 
-        [SetUp]
-        public static void SetUp()
+        [BeforeScenario]
+        public static void BeforeFeature()
         {
-            Logging.WriteLine("Reset the app");
-            AppContainer.Driver.ResetApp();
-            Logging.WriteLine("******** Start test script execution ********");
+            if (AppContainer.IsFirstTime)
+            {
+                Logger.WriteLine("App started");
+                AppContainer.IsFirstTime = false;
+            }
+            else
+            {
+                Logger.WriteLine("Reset the app");
+                AppContainer.Driver.ResetApp();
+            }
+
+            Logger.WriteLine("******** Start test script execution ********");
         }
 
-        [TearDown]
-        public static void TearDown()
+        [AfterScenario]
+        public static void AfterFeature()
         {
-            Logging.WriteLine("********  End test script execution  ********");
-            Logging.WriteLine("Close the App");
+            Logger.WriteLine("********  End test script execution  ********");
+            Logger.WriteLine("Close the App");
             AppContainer.Driver.CloseApp();
-            Logging.CreateFile();
+            Logger.CreateFile();
         }
 
-        [OneTimeTearDown]
-        public static void End()
+        [AfterTestRun]
+        public static void AfterTestRun()
         {
             AppContainer.Driver.Quit();
         }
