@@ -10,7 +10,7 @@ namespace TestAutomationFramework.Common
         Info,
         Step
     }
-    public class Logging
+    public class Logger
     {
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the log.
@@ -38,8 +38,9 @@ namespace TestAutomationFramework.Common
             string[] logToPrint = null;
             if(log != null) logToPrint = log.Split(Environment.NewLine);
             const string filePath = "../../../../TestResults/";
+            var fileName = NUnit.Framework.TestContext.CurrentContext.Test.FullName.Replace(".", "_") + ".txt";
+            fileName = fileName.Replace("\"","").Replace("(", "-").Replace(")", "").Replace(",","-").Replace("-null", "");
             System.IO.Directory.CreateDirectory(filePath); //Not necessary to validate if the path already exists.
-            var fileName = NUnit.Framework.TestContext.CurrentContext.Test.FullName.Replace(".", "__") + ".txt";
             System.IO.File.WriteAllLines(filePath+fileName, logToPrint);
         }
     }
