@@ -19,5 +19,20 @@ namespace TestAutomationFramework.Extensions
 
             return flag;
         }
+
+        public static bool IsElementEnabled(this AppiumWebElement element)
+        {
+            var flag = false;
+            try
+            {
+                flag = element.Enabled;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            return flag;
+        }
     }
 }

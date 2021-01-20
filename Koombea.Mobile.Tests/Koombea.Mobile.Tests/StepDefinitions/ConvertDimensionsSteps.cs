@@ -10,22 +10,76 @@ namespace UnitConverter.Mobile.Tests.StepDefinitions
     public class ConvertDimensionsSteps : TestInitializer
     {
 
-        [When(@"the menu button is tapped")]
-        public void TheMenuButtonIsTapped()
+        [When(@"the operation is Speed")]
+        public void TheOperationIsSpeed()
         {
-            Logger.WriteLine("When the menu button is tapped.", LogType.Step);
+            Logger.WriteLine("When the operation is Speed", LogType.Step);
             var calculatorScreen = new CalculatorScreen();
-            calculatorScreen.TapMenuButton();
+            if(!"Speed".Equals(calculatorScreen.GetTitle()))
+            {
+                calculatorScreen.TapMenuButton();
+                calculatorScreen.SelectMenuOption("Speed");
+            }
+            Assert.AreEqual("Speed", calculatorScreen.GetTitle());
         }
 
-        [Then(@"the (.*) is selected and displayed in the title")]
-        public void SelectAnOperationAndValidateTitle(string operation)
+        [Then(@"the change sign key is disabled")]
+        public void SelectAnOperationAndValidateTitle()
         {
-            Logger.WriteLine($"Then the {operation} is selected and displayed in the title", LogType.Step);
+            Logger.WriteLine($"Then the change sign key is disabled", LogType.Step);
             var calculatorScreen = new CalculatorScreen();
-            calculatorScreen.SelectMenuOption(operation);
-            Assert.AreEqual(calculatorScreen.GetTitle(), operation, "Title is valid.");
-            Logger.WriteLine("Title changed after selecting the menu option", LogType.Success);
+            Assert.IsFalse(calculatorScreen.IsChangeSignKeyEnabled(), "Change Sign key is disabled");
+            Logger.WriteLine("Change Sign key is disabled", LogType.Success);
+        }
+
+        [Given(@"a user that selects a conversion (.*) from menu")]
+        public void UserSelectConversionOperationFromMenu(string operation)
+        {
+            Logger.WriteLine($"Given a user that selects a conversion {operation} from menu", LogType.Step);
+            var calculatorScreen = new CalculatorScreen();
+            if (!operation.Equals(calculatorScreen.GetTitle()))
+            {
+                calculatorScreen.TapMenuButton();
+                calculatorScreen.SelectMenuOption(operation);
+            }
+
+            Assert.AreEqual(operation, calculatorScreen.GetTitle(), "Operation selected successfully");
+        }
+
+        [When(@"the (origin|desired) unit (.*) is selected")]
+        public void SelectOriginUnit(string source, string unit)
+        {
+            Logger.WriteLine($"When the {source} unit {unit} is selected", LogType.Step);
+            var calculatorScreen = new CalculatorScreen();
+            if (source.Equals("origin"))
+            {
+                calculatorScreen.SelectUnitFrom(unit);
+                Assert.AreEqual(unit, calculatorScreen.GetUnitFrom(), "Unit 'From' selected successfully");
+            }
+            else
+            {
+                calculatorScreen.SelectUnitTo(unit);
+                Assert.AreEqual(unit, calculatorScreen.GetUnitTo(), "Unit 'To' selected successfully");
+            }
+        }
+
+        [When(@"the (.*) is inserted")]
+        public void TheEntryValueIsInserted(string entryValue)
+        {
+            Logger.WriteLine($"When the Entry Value {entryValue} is inserted", LogType.Step);
+            var calculatorScreen = new CalculatorScreen();
+            calculatorScreen.Clear();
+            calculatorScreen.EntryValue(entryValue);
+            Assert.AreEqual(entryValue, calculatorScreen.GetSourceValue(), "Entry value entered successfully.");
+        }
+
+        [Then(@"the result should be (.*)")]
+        public void TheResultShouldBe(string result)
+        {
+            Logger.WriteLine($"Then the result should be {result}", LogType.Step);
+            var calculatorScreen = new CalculatorScreen();
+            Assert.AreEqual(double.Parse(result), calculatorScreen.GetTargetValue(), "Conversion is valid");
+            Logger.WriteLine("Number converted successfully.", LogType.Success);
         }
     }
 }
