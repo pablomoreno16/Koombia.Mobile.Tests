@@ -8,21 +8,20 @@ namespace UnitConverter.Mobile.Tests.ScreenObjects
 {
     public class CalculatorScreen : BaseScreen
     {
-        #region DOM element
+        #region DOM elements
         //This is just for illustrating how it would be for both iOS and Android
         private AppiumWebElement MenuButton => IsAndroid ? TryFindElement(By.XPath("//android.widget.ImageButton[@content-desc='Open navigation drawer']")) : TryFindElement(By.Name("put the id here"));
         //As this exercise is only for android I will avoid casting the rest of the code
-        private By byMenuOptions => By.Id("drawerCategoryName");
         private AppiumWebElement Title => TryFindElement(By.XPath("//android.widget.TextView[1]"));
-        private AppiumWebElement UnitFrom => TryFindElement(By.XPath("//android.widget.Spinner[contains(@resource-id,'from_units_spinner')]//android.widget.TextView[contains(@resource-id,'select_unit_spinner')]"));
-        private AppiumWebElement UnitTo => TryFindElement(By.XPath("//android.widget.Spinner[contains(@resource-id,'to_units_spinner')]//android.widget.TextView[contains(@resource-id,'select_unit_spinner')]")); 
-        private By ByUnitFromAndToOptions => By.Id("select_unit_spinner_menu_name");
-        private AppiumWebElement _keyPadContainer;
-        private AppiumWebElement KeyPadContainer => _keyPadContainer ??= TryFindElement(By.Id("keypad"));
-        private AppiumWebElement ChangeSignKey => KeyPadContainer.FindElementByXPath($"//android.widget.Button[@text='+/-']");
+        private AppiumWebElement UnitFrom => TryFindElement(By.XPath("//android.widget.Spinner[@resource-id='com.ba.universalconverter:id/from_units_spinner']//android.widget.TextView[@resource-id='com.ba.universalconverter:id/select_unit_spinner']"));
+        private AppiumWebElement UnitTo => TryFindElement(By.XPath("//android.widget.Spinner[@resource-id='com.ba.universalconverter:id/to_units_spinner']//android.widget.TextView[@resource-id='com.ba.universalconverter:id/select_unit_spinner']"));
+        private AppiumWebElement ChangeSignKey => TryFindElement(By.XPath("//android.widget.Button[@text='+/-']"));
         private AppiumWebElement SourceValue => TryFindElement(By.Id("source_value"));
         private AppiumWebElement TargetValue => TryFindElement(By.Id("target_value"));
-
+        
+        private const string XpathUnitFromAndToOptions = "//android.widget.TextView[@resource-id='com.ba.universalconverter:id/select_unit_spinner_menu_name' and @text='{0}']";
+        private const string XpathMenuOptions = "//android.widget.TextView[@resource-id='com.ba.universalconverter:id/drawerCategoryName' and @text='{0}']";
+        
         #endregion
 
         #region Public Methods
@@ -36,7 +35,7 @@ namespace UnitConverter.Mobile.Tests.ScreenObjects
         public void SelectMenuOption(string option)
         {
             Logger.WriteLine($"Looking for option [{option}] from Menu.");
-            FindElementByText(byMenuOptions, option);
+            FindElementByText(XpathMenuOptions, option);
         }
 
         public string GetTitle()
@@ -51,7 +50,7 @@ namespace UnitConverter.Mobile.Tests.ScreenObjects
             Logger.WriteLine("Tapping in 'Unit From' dropdown");
             TapElement(UnitFrom);
             Logger.WriteLine($"Selecting the option [{unitName}]");
-            FindElementByText(ByUnitFromAndToOptions, unitName);
+            FindElementByText(XpathUnitFromAndToOptions, unitName);
         }
 
         public string GetUnitFrom()
@@ -65,7 +64,7 @@ namespace UnitConverter.Mobile.Tests.ScreenObjects
             Logger.WriteLine("Tapping in 'Unit To' dropdown");
             TapElement(UnitTo);
             Logger.WriteLine($"Selecting the option [{unitName}]");
-            FindElementByText(ByUnitFromAndToOptions, unitName);
+            FindElementByText(XpathUnitFromAndToOptions, unitName);
         }
 
         public string GetUnitTo()
@@ -86,7 +85,7 @@ namespace UnitConverter.Mobile.Tests.ScreenObjects
             if (negative) value = value.Replace("-", "");
             foreach (var val in value)
             {
-                TapElement(KeyPadContainer.FindElementByXPath($"//android.widget.Button[@text='{val}']"));
+                TapElement(TryFindElement(By.XPath($"//android.widget.Button[@text='{val}']")));
             }
             if(negative) TapElement(ChangeSignKey);
         }
@@ -98,7 +97,7 @@ namespace UnitConverter.Mobile.Tests.ScreenObjects
 
         public double GetTargetValue()
         {
-            Logger.WriteLine($"Target Value: {TargetValue.Text}");
+            Logger.WriteLine("Getting the target value");
             return double.Parse(TargetValue.Text.Replace(" ", ""));
         }
 

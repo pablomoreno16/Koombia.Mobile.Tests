@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
-using OpenQA.Selenium.Appium.ImageComparison;
 using OpenQA.Selenium.Appium.iOS;
 using OpenQA.Selenium.Appium.MultiTouch;
 using TestAutomationFramework.Common;
@@ -28,6 +27,7 @@ namespace TestAutomationFramework.Screens
             }
             catch (Exception)
             {
+                Logger.WriteLine("Element not found");
                 if (IsAndroid)
                 {
                     return new AndroidElement(AppContainer.Driver, null);
@@ -51,6 +51,12 @@ namespace TestAutomationFramework.Screens
             }
         }
 
+        protected void TapElement(AppiumWebElement element)
+        {
+            var touchAction = new TouchAction(AppContainer.Driver);
+            touchAction.Tap(element).Perform();
+        }
+
         public enum ScrollDirection
         {
             Up,
@@ -67,79 +73,63 @@ namespace TestAutomationFramework.Screens
             
             Logger.WriteLine($"Scrolling {direction}");
 
-            var action = new TouchAction(AppContainer.Driver);
             switch (direction)
             {
                 case ScrollDirection.Down:
-                    action.Press(bottom.X, bottom.Y).Wait(200).MoveTo(top.X, top.Y).Release().Wait(500); //wait at the end for giving time to the animation to finish
+                    Swipe(bottom, top);
                     break;
                 case ScrollDirection.Up:
-                    action.Press(top.X, top.Y).Wait(200).MoveTo(bottom.X, bottom.Y).Release().Wait(500); //wait at the end for giving time to the animation to finish
+                    Swipe(top, bottom, 200, 0);
                     break;
             }
-            action.Perform();
-        }
-
-        [Obsolete("ScrollToUp is deprecated since PageSource change because the ads bar. Please use ScrollToTop instead.")]
-        protected void ScrollToUp()
-        {
-            Logger.WriteLine("Scrolling up until reaching the top of the screen");
-            string pageBeforeScrolling, pageAfterScrolling;
-            do
-            {
-                pageBeforeScrolling = AppContainer.Driver.PageSource;
-                Scroll(ScrollDirection.Up);
-                pageAfterScrolling = AppContainer.Driver.PageSource;
-            } while (pageBeforeScrolling != pageAfterScrolling);
         }
 
         protected void ScrollToTop()
         {
             Logger.WriteLine("Scrolling up until reaching the top of the screen");
-            SimilarityMatchingResult result;
-            do
+            for (var count = 0; count < 2; count++)
             {
-                var pageBeforeScrolling = AppContainer.Driver.GetScreenshot().AsBase64EncodedString;
                 Scroll(ScrollDirection.Up);
-                var pageAfterScrolling = AppContainer.Driver.GetScreenshot().AsBase64EncodedString;
-                result = AppContainer.Driver.GetImagesSimilarity(pageBeforeScrolling, pageAfterScrolling, new SimilarityMatchingOptions { Visualize = true });
-                //Logger.WriteLine($"Score: {result.Score}");
-            } while (result.Score < 0.98);
+            }
         }
 
-        protected void TapElement(AppiumWebElement element)
+        protected void ScrollToElement(AppiumWebElement element)
         {
-            var touchAction = new TouchAction(AppContainer.Driver);
-            touchAction.Tap(element).Perform();
+            while (!element.IsElementDisplayed())
+            {
+                Scroll();
+            }
+        }
+
+        protected void Swipe(Point start, Point end, int msDuration = 500, int msDuration2 = 1000)
+        {
+            var action = new TouchAction(AppContainer.Driver);
+            action.Press(start.X, start.Y).Wait(msDuration).MoveTo(end.X, end.Y).Wait(msDuration2).Release();
+            action.Perform();
         }
 
         /// <summary>
         /// Look for a group of element the one that has the text received
         /// </summary>
-        /// <param name="by">Locator for the group of elements</param>
+        /// <param name="xpath">xpath locator</param>
         /// <param name="text">Text criteria for the search</param>
-        protected void FindElementByText(By by, string text)
+        protected void FindElementByText(string xpath, string text)
         {
             ScrollToTop();
-            SimilarityMatchingResult result;
-            do
+            for(var count = 0; count < 4 ; count++)
             {
-                var elementToTap = TryFindElements(by).FirstOrDefault(opt => opt.Text.Equals(text));
+                var elementToTap = TryFindElement(By.XPath(string.Format(xpath, text)));
 
                 if (elementToTap != null && elementToTap.IsElementDisplayed())
                 {
+                    ScrollToElement(elementToTap);
                     Logger.WriteLine($"Tapping on {text}...");
                     TapElement(elementToTap);
                     Logger.WriteLine($"Tapped on {text}");
                     return;
                 }
-
-                var pageBeforeScrolling = AppContainer.Driver.GetScreenshot().AsBase64EncodedString;
                 Scroll();
-                var pageAfterScrolling = AppContainer.Driver.GetScreenshot().AsBase64EncodedString;
-                
-                result = AppContainer.Driver.GetImagesSimilarity(pageBeforeScrolling, pageAfterScrolling, new SimilarityMatchingOptions { Visualize = true });
-            } while (result.Score < 0.98);
+            }
             var errorMsg = $"Option [{text}] was not found.";
             Logger.WriteLine(errorMsg, LogType.Error);
             throw new Exception(errorMsg);
