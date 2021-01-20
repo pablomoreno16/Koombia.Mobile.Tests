@@ -13,7 +13,6 @@ namespace TestAutomationFramework.Containers
     {
         public static AppiumDriver<AppiumWebElement> Driver;
         public static string PlatformName;
-        public static bool IsFirstTime = true;
 
         /// <summary>
         /// Set up the Driver according with configurations in appsettings.json
@@ -38,6 +37,7 @@ namespace TestAutomationFramework.Containers
                 opts.AddAdditionalCapability(MobileCapabilityType.DeviceName, deviceName);
                 opts.AddAdditionalCapability(MobileCapabilityType.App, mobileAppPath);
                 opts.AddAdditionalCapability("noReset", true);
+                opts.AddAdditionalCapability("newCommandTimeout", 120000);
 
                 //if app is not native then add chromedriver
                 //opts.AddAdditionalCapability("chromedriverExecutable", "Resources/Drivers/appium_chromedriver.exe");
@@ -54,7 +54,6 @@ namespace TestAutomationFramework.Containers
                 {
                     throw new NotImplementedException("Platform '" + PlatformName + "' not setup in AppContainer.SetUpDriver();");
                 }
-                Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
             }
             catch (Exception e)
             {

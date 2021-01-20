@@ -75,17 +75,37 @@ namespace UnitConverter.Mobile.Tests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Title change once an operation is selected.")]
-        [NUnit.Framework.TestCaseAttribute("Length", null)]
-        [NUnit.Framework.TestCaseAttribute("Area", null)]
-        [NUnit.Framework.TestCaseAttribute("Volume", null)]
-        [NUnit.Framework.TestCaseAttribute("Speed", null)]
-        public virtual void TitleChangeOnceAnOperationIsSelected_(string operation, string[] exampleTags)
+        [NUnit.Framework.DescriptionAttribute("Validate Convert values functionality")]
+        [NUnit.Framework.TestCaseAttribute("Length", "Kilometer", "Decameter", "-999999999", "-99999999900", null)]
+        [NUnit.Framework.TestCaseAttribute("Length", "Kilometer", "Decameter", "0", "0", null)]
+        [NUnit.Framework.TestCaseAttribute("Length", "Kilometer", "Decameter", "999999999", "99999999900", null)]
+        [NUnit.Framework.TestCaseAttribute("Length", "Fathom", "Fathom", "-25000", "-25000", null)]
+        [NUnit.Framework.TestCaseAttribute("Length", "[Hist.rus.] Arshin", "Kilometer", "0.0001", "0.00000007112", null)]
+        [NUnit.Framework.TestCaseAttribute("Length", "Kilometer", "[Hist.rus.] Arshin", "0.00000007112", "0.0001", null)]
+        [NUnit.Framework.TestCaseAttribute("Area", "Are", "Square thou", "-30", "-4650009300018.6", null)]
+        [NUnit.Framework.TestCaseAttribute("Area", "Are", "Square thou", "0", "0", null)]
+        [NUnit.Framework.TestCaseAttribute("Area", "Are", "Square thou", "30", "4650009300018.6", null)]
+        [NUnit.Framework.TestCaseAttribute("Area", "Are", "Are", "30", "30", null)]
+        [NUnit.Framework.TestCaseAttribute("Area", "Square thou", "Are", "-4650009300018.6", "-30", null)]
+        [NUnit.Framework.TestCaseAttribute("Volume", "Hectoliter", "Cubic inch", "-999999999999999", "-6102374399999993897.6256", null)]
+        [NUnit.Framework.TestCaseAttribute("Volume", "Hectoliter", "Cubic inch", "0", "0", null)]
+        [NUnit.Framework.TestCaseAttribute("Volume", "Hectoliter", "Cubic inch", "999999999999999", "6102374399999993897.6256", null)]
+        [NUnit.Framework.TestCaseAttribute("Volume", "Hectoliter", "Cubic inch", "999999999999999", "6102374399999993897.6256", null)]
+        [NUnit.Framework.TestCaseAttribute("Volume", "Hectoliter", "Hectoliter", "1000", "1000", null)]
+        [NUnit.Framework.TestCaseAttribute("Speed", "Kilometer per hour", "Speed of sound in steel", "0", "0", null)]
+        [NUnit.Framework.TestCaseAttribute("Speed", "Kilometer per hour", "Speed of sound in steel", "0.0000001", "0.000000000004661", null)]
+        [NUnit.Framework.TestCaseAttribute("Speed", "Seconds per meter", "Speed of sound in steel", "10000000000000000", "0.00000000000000000002", null)]
+        [NUnit.Framework.TestCaseAttribute("Speed", "Kilometer per hour", "Kilometer per hour", "1000", "1000", null)]
+        public virtual void ValidateConvertValuesFunctionality(string operation, string unitFrom, string unitTo, string entryValue, string result, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("operation", operation);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Title change once an operation is selected.", null, tagsOfScenario, argumentsOfScenario);
+            argumentsOfScenario.Add("unitFrom", unitFrom);
+            argumentsOfScenario.Add("unitTo", unitTo);
+            argumentsOfScenario.Add("entryValue", entryValue);
+            argumentsOfScenario.Add("result", result);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate Convert values functionality", null, tagsOfScenario, argumentsOfScenario);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -107,29 +127,32 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 6
- testRunner.When("the menu button is tapped", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given(string.Format("a user that selects a conversion {0} from menu", operation), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 7
- testRunner.Then(string.Format("the {0} is selected and displayed in the title", operation), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When(string.Format("the origin unit {0} is selected", unitFrom), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 8
+ testRunner.And(string.Format("the desired unit {0} is selected", unitTo), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 9
+ testRunner.And(string.Format("the {0} is inserted", entryValue), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 10
+ testRunner.Then(string.Format("the result should be {0}", result), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Validate that the user is able to convert values")]
-        [NUnit.Framework.TestCaseAttribute("Length", "Decimeter", "Centimeter", "5000", "50000", null)]
-        public virtual void ValidateThatTheUserIsAbleToConvertValues(string operation, string unitFrom, string unitTo, string entryValue, string resultLength, string[] exampleTags)
+        [NUnit.Framework.DescriptionAttribute("Only allow positive numbers for Speed operations")]
+        public virtual void OnlyAllowPositiveNumbersForSpeedOperations()
         {
-            string[] tagsOfScenario = exampleTags;
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            argumentsOfScenario.Add("operation", operation);
-            argumentsOfScenario.Add("unitFrom", unitFrom);
-            argumentsOfScenario.Add("unitTo", unitTo);
-            argumentsOfScenario.Add("entryValue", entryValue);
-            argumentsOfScenario.Add("resultLength", resultLength);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate that the user is able to convert values", null, tagsOfScenario, argumentsOfScenario);
-#line 15
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Only allow positive numbers for Speed operations", null, tagsOfScenario, argumentsOfScenario);
+#line 36
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -149,20 +172,11 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 16
- testRunner.Given(string.Format("a user that selects a conversion {0} from menu", operation), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 37
+ testRunner.When("the operation is Speed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 17
- testRunner.When(string.Format("the original unit {0} is selecteded", unitFrom), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 18
- testRunner.And(string.Format("the desired unit {0} is selected", unitTo), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 19
- testRunner.And(string.Format("the {0} is inserted", entryValue), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 20
- testRunner.Then("the result should be <result>", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 38
+ testRunner.Then("the change sign key is disabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
