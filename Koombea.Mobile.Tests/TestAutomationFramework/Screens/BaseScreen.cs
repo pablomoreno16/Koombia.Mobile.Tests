@@ -79,7 +79,7 @@ namespace TestAutomationFramework.Screens
                     Swipe(bottom, top);
                     break;
                 case ScrollDirection.Up:
-                    Swipe(top, bottom, 200, 0);
+                    Swipe(top, bottom, 0, 0);
                     break;
             }
         }
@@ -87,7 +87,7 @@ namespace TestAutomationFramework.Screens
         protected void ScrollToTop()
         {
             Logger.WriteLine("Scrolling up until reaching the top of the screen");
-            for (var count = 0; count < 2; count++)
+            for (var count = 0; count < 3; count++)
             {
                 Scroll(ScrollDirection.Up);
             }
