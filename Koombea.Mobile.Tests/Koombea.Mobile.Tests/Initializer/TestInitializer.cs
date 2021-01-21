@@ -16,6 +16,8 @@ namespace UnitConverter.Mobile.Tests.Initializer
         [BeforeScenario]
         public static void BeforeFeature()
         {
+            Logger.WriteLine("Reset the app");
+            AppContainer.Driver.ResetApp();
             Logger.WriteLine("******** Start test script execution ********");
         }
 
