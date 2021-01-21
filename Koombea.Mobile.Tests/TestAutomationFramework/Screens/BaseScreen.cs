@@ -116,7 +116,7 @@ namespace TestAutomationFramework.Screens
         protected void FindElementByText(string xpath, string text)
         {
             ScrollToTop();
-            for(var count = 0; count < 4 ; count++)
+            for(var count = 0; count < 5 ; count++)
             {
                 var elementToTap = TryFindElement(By.XPath(string.Format(xpath, text)));
 
